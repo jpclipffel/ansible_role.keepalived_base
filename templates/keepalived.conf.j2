@@ -1,0 +1,69 @@
+# keepalived.conf
+#
+# THIS FILE IS GENERATED AND MAINTAINED BY ANSIBLE.
+# DO NOT DELETE, RENAME OR CHANGE THIS FILE.
+#
+# --- Ansible log ---
+# Generation role: {{ role_name }}
+# Generation date: {{ ansible_date_time.iso8601 }}
+# ---
+
+
+{% for script in keepalived_base_scripts | default([]) %}
+# Tracking scripts
+vrrp_script {{ script.name }} {
+  script "{{ script.path | default(keepalived_base_scripts_dir + '/' + script.name) }}"
+  interval {{ script.interval | default(keepalived_base_defaults_script_interval) | int }}
+}
+{% endfor %}
+
+
+{% for instance in keepalived_base_instances | default([]) %}
+# VRRP instances
+vrrp_instance {{ instance.name }} {
+  interface {{ instance.interface | default(keepalived_base_defaults_interface) }}
+  state {{ instance.state | default(keepalived_base_defaults_state) }}
+  priority {{ instance.priority | default(keepalived_base_defaults_priority) }}
+  virtual_router_id {{ instance.router_id | default(loop.index) }}
+  advert_int {{ instance.advert_int | default(keepalived_base_defaults_advert_int) }}
+  nopreempt
+
+  # VRRP instance / Authentication
+{% if instance.auth is defined %}
+  authentication {
+    auth_type PASS
+    auth_pass {{ instance.auth.pass | default(keepalived_base_defaults_auth_pass) }}
+  }
+{% endif %}
+
+  # VRRP instance / Peers
+{% if instance.peers is defined %}
+  unicast_peer {
+{% if instance.peers | length > 0 %}{% for peer in instance.peers %}
+    {{ peer }}
+{% endfor %}
+{% else %}{% for peer in ansible_play_hosts %}
+    {{ hostvars[peer].ansible_default_ipv4.address }}
+{% endfor %}
+{% endif %}
+  }
+{% endif %}
+
+  # VRRP instance / VIP
+{% if instance.vips is defined and instance.vips | length > 0 %}
+  virtual_ipaddress {
+{% for vip in instance.vips %}
+    {{ vip }}
+{% endfor %}
+  }
+{% endif %}
+
+  # VRRP instance / Tracking script
+{% if instance.script is defined %}
+  track_script {
+    {{ instance.script }}
+  }
+{% endif %}
+}
+
+{% endfor %}

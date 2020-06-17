@@ -1,0 +1,20 @@
+# keepalived.service
+#
+# THIS FILE IS GENERATED AND MAINTAINED BY ANSIBLE.
+# DO NOT DELETE, RENAME OR CHANGE THIS FILE.
+#
+# --- Ansible log ---
+# Generation role: {{ role_name }}
+# Generation date: {{ ansible_date_time.iso8601 }}
+# ---
+
+[Unit]
+Description=keepalived
+
+[Service]
+ExecStart={{ keepalived_base_bin }} --dont-fork
+RestartSec=5
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

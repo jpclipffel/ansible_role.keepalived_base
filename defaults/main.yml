@@ -1,0 +1,23 @@
+# Keepalived's packages info 
+keepalived_base_src_version: "2.0.20"
+keepalived_base_src_package: "keepalived-{{ keepalived_base_src_version }}.tar.gz"
+keepalived_base_src_url: "https://www.keepalived.org/software/{{ keepalived_base_src_package }}"
+
+# Keepalived paths
+keepalived_base_etc: /etc/keepalived
+keepalived_base_conf: "{{ keepalived_base_etc }}/keepalived.conf"
+keepalived_base_bin: /usr/local/sbin/keepalived
+keepalived_base_service: /etc/systemd/system/keepalived.service
+keepalived_base_scripts_dir: /usr/local/sbin/keepalived_scripts
+
+# Default profile template
+keepalived_base_profile: templates/keepalived.conf.j2
+
+# Profiles' defaults values
+keepalived_base_defaults_script_interval: 2
+keepalived_base_defaults_interface: "{{ ansible_default_ipv4.interface }}"
+keepalived_base_defaults_state: BACKUP
+keepalived_base_defaults_priority: 150
+keepalived_base_defaults_router_id: 20
+keepalived_base_defaults_advert_int: 1
+keepalived_base_defaults_auth_pass: 1234

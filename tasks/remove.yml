@@ -1,0 +1,4 @@
+- name: Remove Keepalived binary
+  file:
+    path: "{{ keepalived_base_bin }}"
+    state: absent

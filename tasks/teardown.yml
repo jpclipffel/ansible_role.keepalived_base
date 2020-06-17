@@ -1,0 +1,22 @@
+- name: Stop and disable Keepalived service
+  systemd:
+    name: keepalived
+    enabled: no
+    state: stopped
+    daemon_reload: yes
+  ignore_errors: yes
+
+- name: Remove Keepalived service
+  file:
+    path: "{{ keepalived_base_service }}"
+    state: absent
+
+- name: Remove Keepalived configuration
+  file:
+    path: "{{ keepalived_base_etc }}"
+    state: absent
+
+- name: Remove Keepalived scripts
+  file:
+    path: "{{ keepalived_base_scripts_dir }}"
+    state: absent

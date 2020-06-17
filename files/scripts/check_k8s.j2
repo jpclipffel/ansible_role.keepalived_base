@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#
+# THIS FILE IS GENERATED AND MAINTAINED BY ANSIBLE.
+# DO NOT DELETE, RENAME OR CHANGE THIS FILE.
+#
+# --- Ansible log ---
+# Generation role: {{ role_name }}
+# Generation date: {{ ansible_date_time.iso8601 }}
+# ---
+
+curl -ki https://{{ keepalived_base_checks_k8s_iface | default('0.0.0.0') }}:{{ keepalived_base_checks_k8s_port | default('6443') }}
+exit $?

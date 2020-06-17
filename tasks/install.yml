@@ -1,0 +1,41 @@
+- name: Check Keepalived installation status
+  stat:
+    path: "{{ keepalived_base_bin }}"
+  register: _keepalived_base_bin
+
+- name: Install building dependencies
+  package:
+    name:
+      - build-essential
+      - libssl-dev
+    state: present
+  when:
+    - not _keepalived_base_bin.stat.exists or 'force' in ansible_run_tags
+
+- name: Create temporary directory
+  tempfile:
+    state: directory
+  register: keepalived_base_tmp
+  when:
+    - not _keepalived_base_bin.stat.exists or 'force' in ansible_run_tags
+
+- name: Download Keepalived from Ansible controller
+  unarchive:
+    src: "files/{{ keepalived_base_src_package }}"
+    dest: "{{ keepalived_base_tmp.path }}"
+  when:
+    - not _keepalived_base_bin.stat.exists or 'force_install' in ansible_run_tags
+
+- name: Build and install Keepalived from source
+  shell:
+    cmd: ./configure && make && make install
+    chdir: "{{ keepalived_base_tmp.path }}/keepalived-{{ keepalived_base_src_version }}"
+  when:
+    - not _keepalived_base_bin.stat.exists or 'force' in ansible_run_tags
+
+- name: Remove temporary directory
+  file:
+    path: "{{ keepalived_base_tmp.path }}"
+    state: absent
+  when:
+    - not _keepalived_base_bin.stat.exists or 'force' in ansible_run_tags

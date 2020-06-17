@@ -1,0 +1,46 @@
+- debug:
+    msg: "SUSPECT - Undefined or empty variable '{{ item }}': is this voluntary ?"
+  when:
+    - "{{ item }} is not defined or {{ item }} | length < 1"
+  with_items:
+    - keepalived_base_instances
+    - keepalived_base_scripts
+  tags:
+    - setup
+
+- name: Install Keepalived
+  include_tasks:
+    file: install.yml
+    apply:
+      tags:
+        - setup
+  tags:
+    - setup
+
+- name: Configure Keepalived
+  include_tasks:
+    file: configure.yml
+    apply:
+      tags:
+        - setup
+  tags:
+    - setup
+
+- name: Teardown Keepalived
+  include_tasks:
+    file: teardown.yml
+    apply:
+      tags:
+        - teardown
+  tags:
+    - teardown
+    - remove
+
+- name: Remove Keepalived
+  include_tasks:
+    file: remove.yml
+    apply:
+      tags:
+        - remove
+  tags:
+    - remove
