@@ -1,4 +1,7 @@
-- name: Configure Sysctl
+# code: language=Ansible insertSpaces=true tabSize=2
+
+
+- name: Configure net.ipv4
   sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
@@ -7,25 +10,30 @@
     - { name: net.ipv4.ip_forward, value: 1 }
     - { name: net.ipv4.ip_nonlocal_bind, value: 1 }
 
+
 - name: Remove Keepalived configuration
   file:
     path: "{{ keepalived_base_etc }}"
     state: absent
+
 
 - name: Create Keepalived configuration directory
   file:
     path: "{{ keepalived_base_etc }}"
     state: directory
 
+
 - name: Create Keepalived scripts directory
   file:
     path: "{{ keepalived_base_scripts_dir }}"
     state: directory
 
+
 - name: Template Keepalived configuration
   template:
     src: "{{ keepalived_base_profile }}"
     dest: "{{ keepalived_base_conf }}"
+
 
 - name: Template Keepalived scripts
   template:
@@ -35,10 +43,12 @@
   with_fileglob:
     - scripts/*.j2
 
-- name: Template Keepalived service
-  template:
-    src: templates/keepalived.service.j2
-    dest: "{{ keepalived_base_service }}"
+
+# - name: Template Keepalived service
+#   template:
+#     src: templates/keepalived.service.j2
+#     dest: "{{ keepalived_base_service }}"
+
 
 - name: Start and enable Keepalived service
   systemd:
