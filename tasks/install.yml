@@ -1,7 +1,11 @@
+# code: language=Ansible insertSpaces=true tabSize=2
+
+
 - name: Check Keepalived installation status
   stat:
     path: "{{ keepalived_base_bin }}"
   register: _keepalived_base_bin
+
 
 - name: Install building dependencies
   package:
@@ -12,12 +16,14 @@
   when:
     - not _keepalived_base_bin.stat.exists or 'force' in ansible_run_tags
 
+
 - name: Create temporary directory
   tempfile:
     state: directory
   register: keepalived_base_tmp
   when:
     - not _keepalived_base_bin.stat.exists or 'force' in ansible_run_tags
+
 
 - name: Download Keepalived from Ansible controller
   unarchive:
@@ -26,12 +32,14 @@
   when:
     - not _keepalived_base_bin.stat.exists or 'force_install' in ansible_run_tags
 
+
 - name: Build and install Keepalived from source
   shell:
     cmd: ./configure && make && make install
     chdir: "{{ keepalived_base_tmp.path }}/keepalived-{{ keepalived_base_src_version }}"
   when:
     - not _keepalived_base_bin.stat.exists or 'force' in ansible_run_tags
+
 
 - name: Remove temporary directory
   file:

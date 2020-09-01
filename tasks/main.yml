@@ -1,46 +1,61 @@
-- debug:
-    msg: "SUSPECT - Undefined or empty variable '{{ item }}': is this voluntary ?"
-  when:
-    - "{{ item }} is not defined or {{ item }} | length < 1"
-  with_items:
-    - keepalived_base_instances
-    - keepalived_base_scripts
-  tags:
-    - setup
+# code: language=Ansible insertSpaces=true tabSize=2
 
-- name: Install Keepalived
-  include_tasks:
-    file: install.yml
-    apply:
-      tags:
-        - setup
-  tags:
-    - setup
+
+# - debug:
+#     msg: "SUSPECT - Undefined or empty variable '{{ item }}': is this voluntary ?"
+#   when:
+#     - "{{ item }} is not defined or {{ item }} | length < 1"
+#   with_items:
+#     - keepalived_base_instances
+#     - keepalived_base_scripts
+#   tags:
+#     - setup
+
+
+- name: Assertions
+  assert:
+    that:
+      - keepalived_base_instances | default('') | length > 0
+  tags: [never, setup]
+
+
+# - name: Install Keepalived
+#   include_tasks:
+#     file: install.yml
+#     apply: { tags: [setup] } 
+#   tags: [never, setup]
+
+
+- name: Install Keppalived
+  package:
+    name: keepalived
+    state: present
+  tags: [never, setup]
+
 
 - name: Configure Keepalived
   include_tasks:
     file: configure.yml
-    apply:
-      tags:
-        - setup
-  tags:
-    - setup
+    apply: { tags: [setup] }
+  tags: [never, setup]
+
 
 - name: Teardown Keepalived
   include_tasks:
     file: teardown.yml
-    apply:
-      tags:
-        - teardown
-  tags:
-    - teardown
-    - remove
+    apply: { tags: [teardown] }
+  tags: [never, teardown, remove]
 
-- name: Remove Keepalived
-  include_tasks:
-    file: remove.yml
-    apply:
-      tags:
-        - remove
-  tags:
-    - remove
+
+# - name: Remove Keepalived
+#   include_tasks:
+#     file: remove.yml
+#     apply: { tags: [remove] }
+#   tags: [remove]
+
+
+- name: Uninstall Keppalived
+  package:
+    name: keepalived
+    state: absent
+  tags: [never, remove]
